@@ -1,0 +1,110 @@
+create table pets
+(
+  id int primary key auto_increment,
+  name varchar(55)
+);
+insert pets(name)
+values
+('dogs'),
+('cats'),
+('hamsters');
+create table pack_animals
+(
+  id int primary key auto_increment,
+  name varchar(55)
+);
+insert pack_animals(name)
+values
+('horses'),
+('camels'),
+('donkeys');
+
+create table dogs
+(
+  id int primary key auto_increment,
+  name varchar(55),
+  command varchar(55),
+  date_of_birth date
+);
+insert dogs(name, command, date_of_birth)
+values
+('Sharik','sidet', '2020-01-01'),
+('Barbos','aport', '2022-12-12'),
+('Reks','fas', '2021-09-15');
+
+create table cats like dogs;
+insert cats(name, command, date_of_birth)
+values
+('Vasya','lapu', '2016-01-01'),
+('Kuzya','murlykat', '2022-06-03'),
+('Rizhik','prigat', '2018-08-07');
+
+create table hamsters like dogs;
+insert hamsters(name, command, date_of_birth)
+values
+('Homka','begat', '2023-02-02'),
+('Vzhik','grizt', '2022-12-08'),
+('Zhorik','prigat', '2021-10-05');
+
+create table horses like dogs;
+insert horses(name, command, date_of_birth)
+values
+('Spirit','rys', '2016-02-02'),
+('Amur','hop', '2018-10-09'),
+('Valet','stoy', '2017-11-06');
+
+create table camels like dogs;
+insert camels(name, command, date_of_birth)
+values
+('Agata','poshel', '2015-01-01'),
+('Chayna','nazad', '2016-04-04'),
+('Twist','stoy', '2018-06-06');
+
+create table donkeys like dogs;
+insert donkeys(name, command, date_of_birth)
+values
+('Vuddi','poshel', '2020-01-01'),
+('Zhizel','nazad', '2020-03-08'),
+('Fidzhi','stoy', '2021-05-01');
+
+DELIMITER $$
+CREATE FUNCTION months(dt date)
+RETURNS int
+DETERMINISTIC
+BEGIN
+  RETURN (year(current_date) - year(dt)) * 12 + month(current_date) - month(dt) - (dayofmonth(current_date) < dayofmonth(dt));
+END$$
+DELIMITER ;
+
+create table young_animals
+select name, concat(months(date_of_birth) div 12, ' year(s) ', months(date_of_birth) % 12, ' month(s)')  as age
+from dogs
+where months(date_of_birth) > 12 and months(date_of_birth) < 36
+union select name, concat(months(date_of_birth) div 12, ' year(s) ', months(date_of_birth) % 12, ' month(s)')  as age
+from cats
+where months(date_of_birth) > 12 and months(date_of_birth) < 36
+union select name, concat(months(date_of_birth) div 12, ' year(s) ', months(date_of_birth) % 12, ' month(s)')  as age
+from hamsters
+where months(date_of_birth) > 12 and months(date_of_birth) < 36
+union select name, concat(months(date_of_birth) div 12, ' year(s) ', months(date_of_birth) % 12, ' month(s)')  as age
+from horses
+where months(date_of_birth) > 12 and months(date_of_birth) < 36
+union select name, concat(months(date_of_birth) div 12, ' year(s) ', months(date_of_birth) % 12, ' month(s)')  as age
+from camels
+where months(date_of_birth) > 12 and months(date_of_birth) < 36
+union select name, concat(months(date_of_birth) div 12, ' year(s) ', months(date_of_birth) % 12, ' month(s)')  as age
+from donkeys
+where months(date_of_birth) > 12 and months(date_of_birth) < 36;
+
+select d.id as dogs_id, d.name, d.command, d.date_of_birth,
+c.id as cats_id, c.name, c.command, c.date_of_birth,
+h.id as hamsters_id, h.name, h.command, h.date_of_birth,
+hr.id as horses_id, hr.name, hr.command, hr.date_of_birth,
+cm.id as camels_id, cm.name, cm.command, cm.date_of_birth,
+dn.id as donkeys_id, dn.name, dn.command, dn.date_of_birth
+from dogs d
+join cats c on d.id = c.id
+join hamsters h on d.id = h.id
+join horses hr on d.id = hr.id
+join camels cm on d.id = cm.id
+join donkeys dn on d.id = dn.id;
